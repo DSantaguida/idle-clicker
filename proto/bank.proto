@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package bank;
+
+option go_package = "./bank";
+
+service Bank {
+    rpc CreateBank(BankRequest) returns (CreateBankResponse);
+    rpc GetBankData(BankRequest) returns (GetBankDataResponse);
+}
+
+message BankRequest {
+    string id = 1;
+}
+
+message CreateBankResponse {
+    bool value = 1;
+}
+
+message GetBankDataResponse {
+    int64 count = 1;
+    google.protobuf.Timestamp lastUpdate = 2;
+}
