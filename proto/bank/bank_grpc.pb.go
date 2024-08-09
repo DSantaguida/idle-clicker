@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type BankClient interface {
 	CreateBank(ctx context.Context, in *BankRequest, opts ...grpc.CallOption) (*CreateBankResponse, error)
 	GetBankData(ctx context.Context, in *BankRequest, opts ...grpc.CallOption) (*GetBankDataResponse, error)
+	SetBankData(ctx context.Context, in *SetBankDataRequest, opts ...grpc.CallOption) (*SetBankDataResponse, error)
 }
 
 type bankClient struct {
@@ -52,12 +53,22 @@ func (c *bankClient) GetBankData(ctx context.Context, in *BankRequest, opts ...g
 	return out, nil
 }
 
+func (c *bankClient) SetBankData(ctx context.Context, in *SetBankDataRequest, opts ...grpc.CallOption) (*SetBankDataResponse, error) {
+	out := new(SetBankDataResponse)
+	err := c.cc.Invoke(ctx, "/bank.Bank/SetBankData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BankServer is the server API for Bank service.
 // All implementations must embed UnimplementedBankServer
 // for forward compatibility
 type BankServer interface {
 	CreateBank(context.Context, *BankRequest) (*CreateBankResponse, error)
 	GetBankData(context.Context, *BankRequest) (*GetBankDataResponse, error)
+	SetBankData(context.Context, *SetBankDataRequest) (*SetBankDataResponse, error)
 	mustEmbedUnimplementedBankServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedBankServer) CreateBank(context.Context, *BankRequest) (*Creat
 }
 func (UnimplementedBankServer) GetBankData(context.Context, *BankRequest) (*GetBankDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBankData not implemented")
+}
+func (UnimplementedBankServer) SetBankData(context.Context, *SetBankDataRequest) (*SetBankDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetBankData not implemented")
 }
 func (UnimplementedBankServer) mustEmbedUnimplementedBankServer() {}
 
@@ -120,6 +134,24 @@ func _Bank_GetBankData_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bank_SetBankData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetBankDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BankServer).SetBankData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/bank.Bank/SetBankData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BankServer).SetBankData(ctx, req.(*SetBankDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Bank_ServiceDesc is the grpc.ServiceDesc for Bank service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var Bank_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBankData",
 			Handler:    _Bank_GetBankData_Handler,
+		},
+		{
+			MethodName: "SetBankData",
+			Handler:    _Bank_SetBankData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
