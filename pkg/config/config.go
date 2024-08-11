@@ -24,10 +24,10 @@ type DBConfig struct {
 	SslMode string;
 }
 
-func LoadConfig(path string) (*viper.Viper, error){
+func LoadConfig(path string, name string) (*viper.Viper, error){
 	v := viper.New()
 
-	v.SetConfigName("config")
+	v.SetConfigName(name)
 	v.SetConfigType("yml")
 	v.AddConfigPath(path)
 
@@ -50,8 +50,8 @@ func ParseConfig(v *viper.Viper) (*Config, error){
 	return &config, nil
 }
 
-func GetConfig(path string) (*Config, error){
-	v, err := LoadConfig(path)
+func GetConfig(path string, name string) (*Config, error){
+	v, err := LoadConfig(path, name)
 	if err != nil {
 		return nil, err
 	}

@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	config, err := config.GetConfig("./services/bank/config/")
+	config, err := config.GetConfig("./services/bank/config/", "config")
 	if err != nil {
 		log.Fatalln("Failed to get config: ", err)
 	}
