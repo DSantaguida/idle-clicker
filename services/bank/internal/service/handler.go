@@ -2,25 +2,44 @@ package service
 
 import (
 	"context"
-	"log"
 
 	bankService "github.com/dsantaguida/idle-clicker/proto/bank"
+	"github.com/dsantaguida/idle-clicker/services/bank/internal/models"
 )
 
-func (BankServer) CreateBank(context.Context, *bankService.BankRequest) (*bankService.CreateBankResponse, error) {
-	log.Print("Create Bank")
-	
-	return &bankService.CreateBankResponse{}, nil
+func (b *BankServiceServer) CreateBank(ctx context.Context, bankRequest *bankService.BankRequest) (*bankService.BankResponse, error) {
+	bank := models.CreateBank(bankRequest.Bank.Id, int(bankRequest.Bank.Value))
+
+	bank, err := b.db.CreateBankEntry(ctx, bank)
+	if err != nil {
+		return nil, err
+	}
+
+	return &bankService.BankResponse{Bank: b.bankModelToProto(bank)}, nil
 }
 
-func (BankServer) GetBankData(context.Context, *bankService.BankRequest) (*bankService.GetBankDataResponse, error) {
-	log.Print("Get Bank Data")
+func (b *BankServiceServer) GetBankData(ctx context.Context, bankRequest *bankService.GetBankDataRequest) (*bankService.BankResponse, error) {
+	bank := models.CreateBank(bankRequest.Id, 0)
 
-	return &bankService.GetBankDataResponse{}, nil
+	bank, err := b.db.FindBankById(ctx, bank.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &bankService.BankResponse{Bank: b.bankModelToProto(bank)}, nil
 }
 
-func (BankServer) SetBankData(context.Context, *bankService.SetBankDataRequest) (*bankService.SetBankDataResponse, error) {
-	log.Print("Set Bank Data")
+func (b *BankServiceServer) SetBankData(ctx context.Context, bankRequest *bankService.BankRequest) (*bankService.BankResponse, error) {
+	bank := models.CreateBank(bankRequest.Bank.Id, int(bankRequest.Bank.Value))
 
-	return &bankService.SetBankDataResponse{}, nil
+	newBank, err := b.db.UpdateBank(ctx, bank)
+	if err != nil {
+		return nil, err
+	}
+
+	return &bankService.BankResponse{Bank: b.bankModelToProto(newBank)}, nil
 }
+
+func (*BankServiceServer) bankModelToProto(bank *models.Bank) (*bankService.Bank){
+	return &bankService.Bank{Id: bank.Id, Value: int64(bank.Value)}
+} 

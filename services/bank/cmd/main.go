@@ -6,6 +6,7 @@ import (
 
 	"github.com/dsantaguida/idle-clicker/pkg/config"
 	pb "github.com/dsantaguida/idle-clicker/proto/bank"
+	"github.com/dsantaguida/idle-clicker/services/bank/internal/db"
 	"github.com/dsantaguida/idle-clicker/services/bank/internal/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -14,9 +15,14 @@ import (
 func main() {
 	config, err := config.GetConfig("./services/bank/config/")
 	if err != nil {
-		log.Fatal("Failed to get config: ", err)
-		return
+		log.Fatalln("Failed to get config: ", err)
 	}
+
+	db, err := db.CreateBankRepository(config.Db)
+	if err != nil {
+		log.Fatalln("Failed to create db repository: ", err)
+	}
+	defer db.Close()
 
 	log.Printf("Creating listener on port: %s", config.Server.Port)
 
@@ -28,7 +34,9 @@ func main() {
 	s := grpc.NewServer()
 	reflection.Register(s)
 
-	pb.RegisterBankServer(s, &service.BankServer{})
+	server := service.CreateServer(db)
+
+	pb.RegisterBankServiceServer(s, server)
 	if err := s.Serve(listener); err != nil {
 		log.Fatalln("Failed to serve:", err)
 	}

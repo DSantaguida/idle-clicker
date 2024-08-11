@@ -19,6 +19,9 @@ type DBConfig struct {
 	Port string;
 	User string;
 	Password string;
+	Name string;
+	Driver string;
+	SslMode string;
 }
 
 func LoadConfig(path string) (*viper.Viper, error){
