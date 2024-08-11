@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/dsantaguida/idle-clicker/pkg/config"
 	pb "github.com/dsantaguida/idle-clicker/proto/bank"
 	"github.com/dsantaguida/idle-clicker/services/bank/internal/service"
 	"google.golang.org/grpc"
@@ -11,7 +12,15 @@ import (
 )
 
 func main() {
-	listener, err := net.Listen("tcp", ":8080")
+	config, err := config.GetConfig("./services/bank/config/")
+	if err != nil {
+		log.Fatal("Failed to get config: ", err)
+		return
+	}
+
+	log.Printf("Creating listener on port: %s", config.Server.Port)
+
+	listener, err := net.Listen("tcp", config.Server.Port)
 	if err != nil {
 		log.Fatalln("Failed to create listener:", err)
 	}
