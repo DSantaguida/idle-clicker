@@ -50,17 +50,6 @@ func TestCreateBankEntry(t *testing.T) {
 	}
 }
 
-func CreateBaseBank(bank *models.Bank, ctx context.Context, db *db.BankRepository, t *testing.T) (*models.Bank) {
-	createdBank, err := db.CreateBankEntry(ctx, bank)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if createdBank == nil {
-		t.Fatal("Failed to create banks")
-	}
-	return createdBank
-}
-
 func TestFindBankEntry(t *testing.T) {
 	db, ctx := Setup(t)
 
@@ -111,3 +100,14 @@ func TestFindBankEntry(t *testing.T) {
 		t.Fatal("Failed to update bank value")
 	}
  }
+
+ func CreateBaseBank(bank *models.Bank, ctx context.Context, db *db.BankRepository, t *testing.T) (*models.Bank) {
+	createdBank, err := db.CreateBankEntry(ctx, bank)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if createdBank == nil {
+		t.Fatal("Failed to create banks")
+	}
+	return createdBank
+}
