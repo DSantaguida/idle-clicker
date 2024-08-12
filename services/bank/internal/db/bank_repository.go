@@ -47,7 +47,7 @@ func (b *BankRepository) CreateBankEntry(ctx context.Context, bank *models.Bank)
 	if err != nil && err != idle_errors.ErrBankNotExist {
 		return nil, err
 	} else if existingBank != nil {
-		return nil, errors.New("Bank already exists")
+		return nil, idle_errors.ErrBankAlreadyExists
 	}
 
 	createdBank := &models.Bank{}
@@ -72,7 +72,7 @@ func (b *BankRepository) FindBankById(ctx context.Context, id string) (*models.B
 	return existingBank, nil
 }
 
-func (d *BankRepository) UpdateBank(ctx context.Context, bank *models.Bank) (*models.Bank, error) {
+func (d *BankRepository) UpdateBankEntry(ctx context.Context, bank *models.Bank) (*models.Bank, error) {
 	existingBank, err := d.FindBankById(ctx, bank.Id)
 	if err != nil {
 		return nil, err

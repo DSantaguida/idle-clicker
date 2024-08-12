@@ -32,7 +32,7 @@ func (b *BankServiceServer) GetBankData(ctx context.Context, bankRequest *bankSe
 func (b *BankServiceServer) SetBankData(ctx context.Context, bankRequest *bankService.BankRequest) (*bankService.BankResponse, error) {
 	bank := models.CreateBank(bankRequest.Bank.Id, int(bankRequest.Bank.Value))
 
-	newBank, err := b.db.UpdateBank(ctx, bank)
+	newBank, err := b.db.UpdateBankEntry(ctx, bank)
 	if err != nil {
 		return nil, err
 	}
