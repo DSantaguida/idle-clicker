@@ -57,7 +57,6 @@ func TestFindBankEntry(t *testing.T) {
 	bank := &models.Bank{Id: "101", Value: 1}
 	_ = CreateBaseBank(bank, ctx, db, t)
 
-
 	//Find bank that exists
 	foundBank, err := db.FindBankById(ctx, "101")
 	if err != nil {
