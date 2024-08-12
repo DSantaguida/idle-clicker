@@ -1,7 +1,6 @@
 package test
 
 import (
-	"log"
 	"testing"
 
 	"github.com/dsantaguida/idle-clicker/pkg/config"
@@ -11,22 +10,22 @@ import (
 	"golang.org/x/net/context"
 )
 
-func Setup() (*db.BankRepository, context.Context) {
+func Setup(t *testing.T) (*db.BankRepository, context.Context) {
 	c, err := config.GetConfig("../config/", "config_test")
 	if err != nil {
-		log.Fatal("Failed to find test config: ", err)
+		t.Fatal("Failed to find test config: ", err)
 	}
 
 	db, err := db.CreateBankRepository(c.Db)
 	if err != nil {
-		log.Fatal("Failed to create database connection: ", err)
+		t.Fatal("Failed to create database connection: ", err)
 	}
 
 	return db, context.TODO()
 }
 
 func TestCreateBankEntry(t *testing.T) {
-	db, ctx := Setup()
+	db, ctx := Setup(t)
 	defer db.Close()
 
 	banks := map[string]int {
@@ -63,7 +62,7 @@ func CreateBaseBank(bank *models.Bank, ctx context.Context, db *db.BankRepositor
 }
 
 func TestFindBankEntry(t *testing.T) {
-	db, ctx := Setup()
+	db, ctx := Setup(t)
 
 	//Create a base bank
 	bank := &models.Bank{Id: "101", Value: 1}
@@ -90,7 +89,7 @@ func TestFindBankEntry(t *testing.T) {
 }
 
  func TestUpdateBankEntry(t *testing.T) {
- 	db, ctx := Setup()
+ 	db, ctx := Setup(t)
 
 	//Create a base bank
 	bank := &models.Bank{Id: "201", Value: 0}
