@@ -1,0 +1,12 @@
+server:
+  Version: 1.0.0
+  Port: :8080
+
+db:
+  Host: localhost
+  Port: 5433
+  User: postgres
+  Password: idle-postgres
+  Name: postgres
+  Driver: pgx
+  SslMode: disable
