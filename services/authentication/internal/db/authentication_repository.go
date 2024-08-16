@@ -56,8 +56,13 @@ func (b *AuthenticationRepository) RegisterUser(ctx context.Context, user *model
 		return nil, idle_errors.ErrUsernameTaken
 	}
 
+	passwordHash, err := password.HashPassword(user.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	createdUser := &models.User{}
-	query := fmt.Sprintf(createUserQuery, user.Username, user.Password)
+	query := fmt.Sprintf(createUserQuery, user.Username, passwordHash)
 	err = b.db.QueryRowContext(ctx, query).Scan(&createdUser.Id, &createdUser.Username, &createdUser.Password)
 	if err != nil {
 		return nil, errors.Wrap(err, "RegisterUser")
@@ -78,14 +83,36 @@ func (b *AuthenticationRepository) FindUser(ctx context.Context, username string
 	return existingUser, nil
 }
 
+func (b *AuthenticationRepository) UserLogin(ctx context.Context, user *models.User) (*models.User, error){
+	query := fmt.Sprintf(findUserQuery, user.Username)
+
+	existingUser := &models.User{}
+	err := b.db.QueryRowContext(ctx, query).Scan(&existingUser.Id, &existingUser.Username, &existingUser.Password)
+	if err != nil {
+		return nil, idle_errors.ErrUserNotFound
+	}
+
+	result := password.VerifyPassword(user.Password, existingUser.Password)
+	if !result {
+		return nil, idle_errors.ErrIncorrectPassword
+	}
+
+	return existingUser, nil
+}
+
 func (b *AuthenticationRepository) UpdateUserPassword(ctx context.Context, user *models.User, newPassword string) (*models.User, error){
 	_, err := b.FindUser(ctx, user.Username)
 	if err != nil {
 		return nil, err
 	}
 
+	passwordHash, err := password.HashPassword(newPassword)
+	if err != nil {
+		return nil, err
+	}
+
 	newUser := &models.User{}
-	query := fmt.Sprintf(updateUserQuery, newPassword, user.Username)
+	query := fmt.Sprintf(updateUserQuery, passwordHash, user.Username)
 	err = b.db.QueryRowContext(ctx, query).Scan(&newUser.Id, &newUser.Username, &newUser.Password)
 	if err != nil {
 		return nil, errors.Wrap(err, "UpdateUserPassword")

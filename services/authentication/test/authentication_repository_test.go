@@ -7,6 +7,7 @@ import (
 	"github.com/dsantaguida/idle-clicker/pkg/idle_errors"
 	"github.com/dsantaguida/idle-clicker/services/authentication/internal/db"
 	"github.com/dsantaguida/idle-clicker/services/authentication/internal/models"
+	"github.com/dsantaguida/idle-clicker/services/authentication/internal/password"
 	"golang.org/x/net/context"
 )
 
@@ -29,11 +30,11 @@ func TestCreateUser(t *testing.T) {
 	defer db.Close()
 
 	users := map[string]string {
-		"dan": "san",
-		"user1": "pw1",
-		"user2": "pw2",
-		"user3": "pw3",
-		"user4": "pw4",
+		"dan": "sandan585",
+		"username1": "password1",
+		"username2": "password2",
+		"username3": "password3",
+		"username4": "password4",
 	}
 
 	//Create users
@@ -43,10 +44,10 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	//Try to create user that already exists
-	user := &models.User{Username: "dan", Password: ""}
+	user := &models.User{Username: "dan", Password: "password1234"}
 	_, err := db.RegisterUser(ctx, user)
 	if err != idle_errors.ErrUsernameTaken {
-		t.Fatal("Failed to detect user that already exists.")
+		t.Fatal("Failed to detect user that already exists", err)
 	}
 }
 
@@ -83,18 +84,17 @@ func TestFindUser(t *testing.T) {
 	user := &models.User{Username: "username456", Password: "password456"}
 	_ = CreateBaseUser(user, ctx, db, t)
 
-	//Update base user value
-	_, err := db.UpdateUserPassword(ctx, user, "password678")
+	newPassword := "password678"
+	_, err := db.UpdateUserPassword(ctx, user, newPassword)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	//Check base user new value
 	newUser, err := db.FindUser(ctx, "username456")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if newUser.Password != "password678" {
+	if !password.VerifyPassword(newPassword, newUser.Password) {
 		t.Fatal("Failed to update user value")
 	}
  }

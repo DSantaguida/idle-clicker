@@ -23,7 +23,7 @@ func (b *AuthenticationServiceServer) Register(ctx context.Context, userRequest 
 func (b *AuthenticationServiceServer) Login(ctx context.Context, userRequest *authenticationService.UserRequest) (*authenticationService.LoginResponse, error) {
 	user := models.CreateUser(userRequest.User.Username, userRequest.User.Password)
 
-	user, err := b.db.FindUser(ctx, user.Username)
+	user, err := b.db.UserLogin(ctx, user)
 	if err != nil {
 		return nil, err
 	}
