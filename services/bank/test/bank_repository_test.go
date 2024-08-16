@@ -43,8 +43,7 @@ func TestCreateBankEntry(t *testing.T) {
 	}
 
 	//Try to create bank that already exists
-	bank := &models.Bank{Id: "1", Value: 0}
-	_, err := db.CreateBankEntry(ctx, bank)
+	_, err := db.CreateBankEntry(ctx, "1")
 	if err != idle_errors.ErrBankAlreadyExists {
 		t.Fatal("Failed to detect bank that already exists.")
 	}
@@ -101,7 +100,7 @@ func TestFindBankEntry(t *testing.T) {
  }
 
  func CreateBaseBank(bank *models.Bank, ctx context.Context, db *db.BankRepository, t *testing.T) (*models.Bank) {
-	createdBank, err := db.CreateBankEntry(ctx, bank)
+	createdBank, err := db.CreateBankEntry(ctx, bank.Id)
 	if err != nil {
 		t.Fatal(err)
 	}

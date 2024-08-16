@@ -3,14 +3,18 @@ package service
 import (
 	"context"
 
+	"github.com/dsantaguida/idle-clicker/pkg/jwt"
 	bankService "github.com/dsantaguida/idle-clicker/proto/bank"
 	"github.com/dsantaguida/idle-clicker/services/bank/internal/models"
 )
 
 func (b *BankServiceServer) CreateBank(ctx context.Context, bankRequest *bankService.BankRequest) (*bankService.BankResponse, error) {
-	bank := models.CreateBank(bankRequest.Bank.Id, int(bankRequest.Bank.Value))
+	claims, err := jwt.Verify(bankRequest.Token)
+	if err != nil {
+		return nil, err
+	}
 
-	bank, err := b.db.CreateBankEntry(ctx, bank)
+	bank, err := b.db.CreateBankEntry(ctx, claims.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -19,9 +23,14 @@ func (b *BankServiceServer) CreateBank(ctx context.Context, bankRequest *bankSer
 }
 
 func (b *BankServiceServer) GetBankData(ctx context.Context, bankRequest *bankService.GetBankDataRequest) (*bankService.BankResponse, error) {
-	bank := models.CreateBank(bankRequest.Id, 0)
+	claims, err := jwt.Verify(bankRequest.Token)
+	if err != nil {
+		return nil, err
+	}
 
-	bank, err := b.db.FindBankById(ctx, bank.Id)
+	bank := models.CreateBank(claims.Id, 0)
+
+	bank, err = b.db.FindBankById(ctx, bank.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +38,13 @@ func (b *BankServiceServer) GetBankData(ctx context.Context, bankRequest *bankSe
 	return &bankService.BankResponse{Bank: b.bankModelToProto(bank)}, nil
 }
 
-func (b *BankServiceServer) SetBankData(ctx context.Context, bankRequest *bankService.BankRequest) (*bankService.BankResponse, error) {
-	bank := models.CreateBank(bankRequest.Bank.Id, int(bankRequest.Bank.Value))
+func (b *BankServiceServer) SetBankData(ctx context.Context, bankRequest *bankService.SetBankDataRequest) (*bankService.BankResponse, error) {
+	claims, err := jwt.Verify(bankRequest.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	bank := models.CreateBank(claims.Id, int(bankRequest.Value))
 
 	newBank, err := b.db.UpdateBankEntry(ctx, bank)
 	if err != nil {

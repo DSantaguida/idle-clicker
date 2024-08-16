@@ -42,8 +42,8 @@ func CreateBankRepository(dbConfig config.DBConfig) (*BankRepository, error){
 	return &BankRepository{db: db}, nil
 }
 
-func (b *BankRepository) CreateBankEntry(ctx context.Context, bank *models.Bank) (*models.Bank, error){
-	existingBank, err := b.FindBankById(ctx, bank.Id)
+func (b *BankRepository) CreateBankEntry(ctx context.Context, id string) (*models.Bank, error){
+	existingBank, err := b.FindBankById(ctx, id)
 	if err != nil && err != idle_errors.ErrBankNotExist {
 		return nil, err
 	} else if existingBank != nil {
@@ -51,7 +51,7 @@ func (b *BankRepository) CreateBankEntry(ctx context.Context, bank *models.Bank)
 	}
 
 	createdBank := &models.Bank{}
-	query := fmt.Sprintf(createBankQuery, bank.Id, bank.Value)
+	query := fmt.Sprintf(createBankQuery,id, 0)
 	err = b.db.QueryRowContext(ctx, query).Scan(&createdBank.Id, &createdBank.Value)
 	if err != nil {
 		return nil, errors.Wrap(err, "CreateBankEntry")

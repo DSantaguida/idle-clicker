@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type BankServiceClient interface {
 	CreateBank(ctx context.Context, in *BankRequest, opts ...grpc.CallOption) (*BankResponse, error)
 	GetBankData(ctx context.Context, in *GetBankDataRequest, opts ...grpc.CallOption) (*BankResponse, error)
-	SetBankData(ctx context.Context, in *BankRequest, opts ...grpc.CallOption) (*BankResponse, error)
+	SetBankData(ctx context.Context, in *SetBankDataRequest, opts ...grpc.CallOption) (*BankResponse, error)
 }
 
 type bankServiceClient struct {
@@ -53,7 +53,7 @@ func (c *bankServiceClient) GetBankData(ctx context.Context, in *GetBankDataRequ
 	return out, nil
 }
 
-func (c *bankServiceClient) SetBankData(ctx context.Context, in *BankRequest, opts ...grpc.CallOption) (*BankResponse, error) {
+func (c *bankServiceClient) SetBankData(ctx context.Context, in *SetBankDataRequest, opts ...grpc.CallOption) (*BankResponse, error) {
 	out := new(BankResponse)
 	err := c.cc.Invoke(ctx, "/bank.BankService/SetBankData", in, out, opts...)
 	if err != nil {
@@ -68,7 +68,7 @@ func (c *bankServiceClient) SetBankData(ctx context.Context, in *BankRequest, op
 type BankServiceServer interface {
 	CreateBank(context.Context, *BankRequest) (*BankResponse, error)
 	GetBankData(context.Context, *GetBankDataRequest) (*BankResponse, error)
-	SetBankData(context.Context, *BankRequest) (*BankResponse, error)
+	SetBankData(context.Context, *SetBankDataRequest) (*BankResponse, error)
 	mustEmbedUnimplementedBankServiceServer()
 }
 
@@ -82,7 +82,7 @@ func (UnimplementedBankServiceServer) CreateBank(context.Context, *BankRequest) 
 func (UnimplementedBankServiceServer) GetBankData(context.Context, *GetBankDataRequest) (*BankResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBankData not implemented")
 }
-func (UnimplementedBankServiceServer) SetBankData(context.Context, *BankRequest) (*BankResponse, error) {
+func (UnimplementedBankServiceServer) SetBankData(context.Context, *SetBankDataRequest) (*BankResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetBankData not implemented")
 }
 func (UnimplementedBankServiceServer) mustEmbedUnimplementedBankServiceServer() {}
@@ -135,7 +135,7 @@ func _BankService_GetBankData_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _BankService_SetBankData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BankRequest)
+	in := new(SetBankDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func _BankService_SetBankData_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/bank.BankService/SetBankData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BankServiceServer).SetBankData(ctx, req.(*BankRequest))
+		return srv.(BankServiceServer).SetBankData(ctx, req.(*SetBankDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
