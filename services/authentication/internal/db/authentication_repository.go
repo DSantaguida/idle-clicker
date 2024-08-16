@@ -8,6 +8,7 @@ import (
 	"github.com/dsantaguida/idle-clicker/pkg/config"
 	"github.com/dsantaguida/idle-clicker/pkg/idle_errors"
 	"github.com/dsantaguida/idle-clicker/services/authentication/internal/models"
+	"github.com/dsantaguida/idle-clicker/services/authentication/internal/password"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pkg/errors"
 )
@@ -43,6 +44,11 @@ func CreateAuthenticationRepository(dbConfig config.DBConfig) (*AuthenticationRe
 }
 
 func (b *AuthenticationRepository) RegisterUser(ctx context.Context, user *models.User) (*models.User, error){
+	err := password.CheckPasswordCompliance(user.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	existingUser, err := b.FindUser(ctx, user.Username)
 	if err != nil && err != idle_errors.ErrUserNotFound {
 		return nil, err
