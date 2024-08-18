@@ -1,7 +1,7 @@
 package db
 
 const createBankQuery = `INSERT INTO bank (id, value) 
-	VALUES (%s, %d)
+	VALUES ('%s', %d)
 	RETURNING id, value;`
 
 const findBankQuery = `SELECT * FROM bank 

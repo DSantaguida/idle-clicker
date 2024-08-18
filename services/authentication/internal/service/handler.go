@@ -12,12 +12,17 @@ import (
 func (b *AuthenticationServiceServer) Register(ctx context.Context, userRequest *authenticationService.UserRequest) (*authenticationService.RegisterResponse, error) {
 	user := models.CreateUser(userRequest.User.Username, userRequest.User.Password)
 
-	_, err := b.db.RegisterUser(ctx, user)
+	newUser, err := b.db.RegisterUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	
+	tokenString, err := jwt.CreateToken(newUser.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	return &authenticationService.RegisterResponse{Result: true}, nil
+	return &authenticationService.RegisterResponse{Token: tokenString}, nil
 }
 
 func (b *AuthenticationServiceServer) Login(ctx context.Context, userRequest *authenticationService.UserRequest) (*authenticationService.LoginResponse, error) {

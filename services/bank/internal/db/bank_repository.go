@@ -54,7 +54,7 @@ func (b *BankRepository) CreateBankEntry(ctx context.Context, id string) (*model
 	query := fmt.Sprintf(createBankQuery,id, 0)
 	err = b.db.QueryRowContext(ctx, query).Scan(&createdBank.Id, &createdBank.Value)
 	if err != nil {
-		return nil, errors.Wrap(err, "CreateBankEntry")
+		return nil, errors.Wrap(err, "CreateBankEntry: " + query,)
 	}
 
 	return createdBank, nil

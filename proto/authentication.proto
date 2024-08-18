@@ -24,7 +24,7 @@ message LoginResponse {
 }
 
 message RegisterResponse {
-    bool result = 1;
+    string token = 1;
 }
 
 message UpdatePasswordRequest {
