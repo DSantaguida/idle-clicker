@@ -5,12 +5,12 @@ import (
 	"log"
 	"testing"
 
-	"github.com/dsantaguida/idle-clicker/services/gateway/internal/service"
+	"github.com/dsantaguida/idle-clicker/services/gateway/internal/client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Setup() (*service.IdleClient){
+func Setup() (*client.IdleClient){
 	auth_conn, err := grpc.NewClient("localhost:8082", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
@@ -21,7 +21,7 @@ func Setup() (*service.IdleClient){
 		log.Fatal(err)
 	}
 
-	idleClient := service.CreateIdleClient(auth_conn, bank_conn)
+	idleClient := client.CreateIdleClient(auth_conn, bank_conn)
 	return idleClient
 }
 
