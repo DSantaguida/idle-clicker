@@ -31,7 +31,7 @@ func InterceptorLogger(l zerolog.Logger) logging.Logger {
 
 
 func CreateServerLogInterceptor() grpc.ServerOption{
-	logger := zerolog.New(os.Stderr)
+	logger := zerolog.New(os.Stdout)
 
 	options := []logging.Option {
 		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
@@ -44,7 +44,7 @@ func CreateServerLogInterceptor() grpc.ServerOption{
 }
 
 func CreateClientLogInterceptor() grpc.DialOption{
-	logger := zerolog.New(os.Stderr)
+	logger := zerolog.New(os.Stdout)
 
 	options := []logging.Option {
 		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
