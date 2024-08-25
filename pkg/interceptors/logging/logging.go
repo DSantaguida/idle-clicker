@@ -29,7 +29,6 @@ func InterceptorLogger(l zerolog.Logger) logging.Logger {
 	})
 }
 
-
 func CreateServerLogInterceptor() grpc.ServerOption{
 	logger := zerolog.New(os.Stdout)
 
