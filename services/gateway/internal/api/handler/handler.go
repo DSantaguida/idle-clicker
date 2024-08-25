@@ -36,7 +36,6 @@ func (handler *ApiHandler) Register(writer http.ResponseWriter, request *http.Re
 }
 
 func (handler *ApiHandler) Login(writer http.ResponseWriter, request *http.Request) {
-	log.Print("Login request")
 	ctx := request.Context()
 	user := &model.User{}
 	if err := json.NewDecoder(request.Body).Decode(user); err != nil {
@@ -64,7 +63,6 @@ func (handler *ApiHandler) Login(writer http.ResponseWriter, request *http.Reque
 }
 
 func (handler *ApiHandler) UpdateBankValue(writer http.ResponseWriter, request *http.Request) {
-	log.Print("Update bank request")
 	ctx := request.Context()
 	bankUpdate := &model.BankUpdate{}
 	if err := json.NewDecoder(request.Body).Decode(bankUpdate); err != nil {

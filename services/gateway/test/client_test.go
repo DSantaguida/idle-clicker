@@ -2,7 +2,6 @@ package test
 
 import (
 	"context"
-	"log"
 	"testing"
 
 	"github.com/dsantaguida/idle-clicker/services/gateway/internal/client"
@@ -10,29 +9,32 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Setup() (*client.IdleClient){
+func Setup() (*client.IdleClient, error){
 	auth_conn, err := grpc.NewClient("localhost:8082", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	bank_conn, err := grpc.NewClient("localhost:8081", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	idleClient := client.CreateIdleClient(auth_conn, bank_conn)
-	return idleClient
+	return idleClient, nil
 }
 
 func TestRegisterLoginUpdate(t *testing.T) {
-	idleClient := Setup()
+	idleClient, err := Setup()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	username := "dansan858"
 	password := "password123"
 	ctx := context.TODO()
 
-	err := idleClient.Register(ctx, username, password)
+	err = idleClient.Register(ctx, username, password)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,7 +1,6 @@
 package jwt
 
 import (
-	"log"
 	"os"
 	"time"
 
@@ -38,7 +37,6 @@ func Verify(tokenString string) (*IdleClaims, error) {
 	} else if claims, ok := token.Claims.(*IdleClaims); ok {
 		return claims,  nil
 	} else {
-		log.Fatal("unknown claims type, cannot proceed")
 		return nil, idle_errors.ErrUnknownClaimsType
 	}	
 }
