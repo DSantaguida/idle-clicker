@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/dsantaguida/idle-clicker/services/gateway/internal/api/model"
@@ -18,7 +17,6 @@ func CreateApiHandler(client *client.IdleClient) *ApiHandler {
 }
 
 func (handler *ApiHandler) Register(writer http.ResponseWriter, request *http.Request) {
-	log.Print("Register request")
 	ctx := request.Context()
 	user := &model.User{}
 	if err := json.NewDecoder(request.Body).Decode(user); err != nil {
