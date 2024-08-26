@@ -9,12 +9,12 @@ import (
 )
 
 func (b *BankServiceServer) CreateBank(ctx context.Context, bankRequest *bankService.BankRequest) (*bankService.BankResponse, error) {
-	claims, err := jwt.Verify(bankRequest.Token)
+	id, err := jwt.ParseId(bankRequest.Token)
 	if err != nil {
 		return nil, err
 	}
 
-	bank, err := b.db.CreateBankEntry(ctx, claims.Id)
+	bank, err := b.db.CreateBankEntry(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -23,12 +23,12 @@ func (b *BankServiceServer) CreateBank(ctx context.Context, bankRequest *bankSer
 }
 
 func (b *BankServiceServer) GetBankData(ctx context.Context, bankRequest *bankService.GetBankDataRequest) (*bankService.BankResponse, error) {
-	claims, err := jwt.Verify(bankRequest.Token)
+	id, err := jwt.ParseId(bankRequest.Token)
 	if err != nil {
 		return nil, err
 	}
 
-	bank := models.CreateBank(claims.Id, 0)
+	bank := models.CreateBank(id, 0)
 
 	bank, err = b.db.FindBankById(ctx, bank.Id)
 	if err != nil {
@@ -39,12 +39,12 @@ func (b *BankServiceServer) GetBankData(ctx context.Context, bankRequest *bankSe
 }
 
 func (b *BankServiceServer) SetBankData(ctx context.Context, bankRequest *bankService.SetBankDataRequest) (*bankService.BankResponse, error) {
-	claims, err := jwt.Verify(bankRequest.Token)
+	id, err := jwt.ParseId(bankRequest.Token)
 	if err != nil {
 		return nil, err
 	}
 
-	bank := models.CreateBank(claims.Id, int(bankRequest.Value))
+	bank := models.CreateBank(id, int(bankRequest.Value))
 
 	newBank, err := b.db.UpdateBankEntry(ctx, bank)
 	if err != nil {
