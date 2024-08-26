@@ -15,7 +15,7 @@ func NewRouter(client client.IdleClient) *chi.Mux{
 		apiHandler := handler.CreateApiHandler(&client)
 
 		r.Method(http.MethodPost, "/register", http.HandlerFunc(apiHandler.Register))
-		r.Method(http.MethodGet, "/login", http.HandlerFunc(apiHandler.Login))
+		r.Method(http.MethodPost, "/login", http.HandlerFunc(apiHandler.Login))
 		r.Method(http.MethodPost, "/update", http.HandlerFunc(apiHandler.UpdateBankValue))
 	})
 
