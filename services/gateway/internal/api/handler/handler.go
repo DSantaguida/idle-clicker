@@ -48,8 +48,6 @@ func (handler *ApiHandler) Login(writer http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	writer.WriteHeader(http.StatusOK)
-
 	resp := &model.LoginResponse{
 		Token: token,
 		Value: int64(value),
@@ -58,6 +56,8 @@ func (handler *ApiHandler) Login(writer http.ResponseWriter, request *http.Reque
 	if err != nil {
 		http.Error(writer, err.Error(), 500)
 	}
+
+	writer.WriteHeader(http.StatusOK)
 }
 
 func (handler *ApiHandler) UpdateBankValue(writer http.ResponseWriter, request *http.Request) {
