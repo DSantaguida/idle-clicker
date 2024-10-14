@@ -1,11 +1,13 @@
 package jwt
 
 import (
+	"context"
 	"os"
 	"time"
 
 	"github.com/dsantaguida/idle-clicker/pkg/idle_errors"
 	"github.com/golang-jwt/jwt/v5"
+	"google.golang.org/grpc/metadata"
 )
 
 const TOKEN_KEY string = "token"
@@ -79,4 +81,18 @@ func ValidateWithTime(tokenString string, currentTime time.Time) error {
 
 func Validate(tokenString string) error {
 	return ValidateWithTime(tokenString, time.Now())
+}
+
+func GetTokenFromContext(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", idle_errors.ErrNoMetadata
+	}
+
+	token := md.Get(TOKEN_KEY)[0]
+	if len(token) == 0 {
+		return "", idle_errors.ErrTokenNotInHeader
+	}
+
+	return token, nil
 }
