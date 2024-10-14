@@ -4,9 +4,12 @@ import (
 	"context"
 	"errors"
 
+	"github.com/dsantaguida/idle-clicker/pkg/idle_errors"
+	"github.com/dsantaguida/idle-clicker/pkg/jwt"
 	auth_proto "github.com/dsantaguida/idle-clicker/proto/authentication"
 	bank_proto "github.com/dsantaguida/idle-clicker/proto/bank"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type IdleClient struct {
@@ -36,16 +39,27 @@ func (client *IdleClient) Close() {
 func (client *IdleClient) Register(ctx context.Context, username string, password string) error {
 	user := &auth_proto.User{Username: username, Password: password}
 	userRequest := &auth_proto.UserRequest{User: user}
+	var header metadata.MD
 
-	registerResponse, err := client.authenticationClient.Register(ctx, userRequest)
+	_, err := client.authenticationClient.Register(ctx, userRequest, grpc.Header(&header))
 	if err != nil {
 		return err
 	}
-	if registerResponse.Token == "" {
+
+	token := header.Get(jwt.TOKEN_KEY)[0]
+	if len(token) == 0 {
+		return idle_errors.ErrTokenNotInHeader
+	}
+
+	if token == "" {
 		return errors.New("failed to create user")
 	}
 
-	bankRequest := &bank_proto.BankRequest{Token: registerResponse.Token}
+	//TODO: Do I need to set the header of this request?
+	header = metadata.Pairs(jwt.TOKEN_KEY, token)
+	grpc.SetHeader(ctx, header)
+
+	bankRequest := &bank_proto.BankRequest{}
 	bankResponse, err := client.bankClient.CreateBank(ctx, bankRequest)
 	if err != nil {
 		return err
@@ -60,27 +74,32 @@ func (client *IdleClient) Register(ctx context.Context, username string, passwor
 func (client *IdleClient) Login(ctx context.Context, username string, password string) (string, int, error) {
 	user := &auth_proto.User{Username: username, Password: password}
 	userRequest := &auth_proto.UserRequest{User: user}
+	var header metadata.MD
 
-	loginResponse, err := client.authenticationClient.Login(ctx, userRequest)
+	_, err := client.authenticationClient.Login(ctx, userRequest, grpc.Header(&header))
 	if err != nil {
 		return "", -1, err
 	}
-	if len(loginResponse.Token) == 0 {
-		return "", -1, errors.New("failed to get login token")
+
+	token := header.Get(jwt.TOKEN_KEY)[0]
+	if len(token) == 0 {
+		return "", -1, idle_errors.ErrTokenNotInHeader
 	}
 
-	getBankDataRequest := &bank_proto.GetBankDataRequest{Token: loginResponse.Token}
+	getBankDataRequest := &bank_proto.GetBankDataRequest{}
+	ctx = metadata.AppendToOutgoingContext(ctx, jwt.TOKEN_KEY, token)
 	bankResponse, err := client.bankClient.GetBankData(ctx, getBankDataRequest)
 	if err != nil {
 		return "", -1, err
 	}
 
-	return loginResponse.Token, int(bankResponse.GetBank().Value), nil
+	return token, int(bankResponse.GetBank().Value), nil
 }
 
 func (client *IdleClient) UpdateBankValue(ctx context.Context, token string, value int64) error {
-	setBankDataRequest := &bank_proto.SetBankDataRequest{Token: token, Value: value}
+	setBankDataRequest := &bank_proto.SetBankDataRequest{Value: value}
 
+	ctx = metadata.AppendToOutgoingContext(ctx, jwt.TOKEN_KEY, token)
 	bankResponse, err := client.bankClient.SetBankData(ctx, setBankDataRequest)
 	if err != nil {
 		return err

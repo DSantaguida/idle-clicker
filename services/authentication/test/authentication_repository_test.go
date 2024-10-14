@@ -103,7 +103,7 @@ func TestFindUser(t *testing.T) {
 	db, ctx := Setup(t)
 
    //Create a base user
-   user := &models.User{Username: "username456", Password: "password456"}
+   user := &models.User{Username: "username678", Password: "password456"}
    _ = CreateBaseUser(user, ctx, db, t)
 
    _, err := db.UserLogin(ctx, user)

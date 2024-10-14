@@ -7,6 +7,8 @@ import (
 	"github.com/dsantaguida/idle-clicker/pkg/jwt"
 	authenticationService "github.com/dsantaguida/idle-clicker/proto/authentication"
 	"github.com/dsantaguida/idle-clicker/services/authentication/internal/models"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 func (b *AuthenticationServiceServer) Register(ctx context.Context, userRequest *authenticationService.UserRequest) (*authenticationService.RegisterResponse, error) {
@@ -22,7 +24,10 @@ func (b *AuthenticationServiceServer) Register(ctx context.Context, userRequest 
 		return nil, err
 	}
 
-	return &authenticationService.RegisterResponse{Token: tokenString}, nil
+	header := metadata.Pairs(jwt.TOKEN_KEY, tokenString)
+	grpc.SetHeader(ctx, header)
+
+	return &authenticationService.RegisterResponse{}, nil
 }
 
 func (b *AuthenticationServiceServer) Login(ctx context.Context, userRequest *authenticationService.UserRequest) (*authenticationService.LoginResponse, error) {
@@ -38,7 +43,10 @@ func (b *AuthenticationServiceServer) Login(ctx context.Context, userRequest *au
 		return nil, err
 	}
 
-	return &authenticationService.LoginResponse{Token: tokenString}, nil
+	header := metadata.Pairs(jwt.TOKEN_KEY, tokenString)
+	grpc.SetHeader(ctx, header)
+
+	return &authenticationService.LoginResponse{}, nil
 }
 
 func (b *AuthenticationServiceServer) UpdatePassword(ctx context.Context, userRequest *authenticationService.UpdatePasswordRequest) (*authenticationService.UpdatePasswordResponse, error) {

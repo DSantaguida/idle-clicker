@@ -16,3 +16,5 @@ var ErrIncorrectPassword = errors.New("could not find a user with a matching use
 //JWT errors
 var ErrUnknownClaimsType = errors.New("unknown claims type")
 var ErrExpiredToken = errors.New("jwt is expired")
+var ErrTokenNotInHeader = errors.New("failed to get login token")
+var ErrNoMetadata = errors.New("failed to get incoming metadata")

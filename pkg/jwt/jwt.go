@@ -8,6 +8,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+const TOKEN_KEY string = "token"
+
 type IdleClaims struct {
 	Id string `json:"TOKEN"`;
 	jwt.RegisteredClaims
