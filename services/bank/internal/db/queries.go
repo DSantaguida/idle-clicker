@@ -11,3 +11,5 @@ const updateBankQuery = `UPDATE bank
 	SET value='%d' 
 	WHERE id='%s'
 	RETURNING id, value;`
+
+const deleteTestDataQuery = `DELETE FROM bank;`

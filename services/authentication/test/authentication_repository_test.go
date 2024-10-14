@@ -22,6 +22,8 @@ func Setup(t *testing.T) (*db.AuthenticationRepository, context.Context) {
 		t.Fatal("Failed to create database connection: ", err)
 	}
 
+	db.RemoveAllTestData()
+
 	return db, context.TODO()
 }
 

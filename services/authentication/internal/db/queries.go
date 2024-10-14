@@ -11,3 +11,5 @@ const updateUserQuery = `UPDATE users
 	SET password='%s' 
 	WHERE username='%s'
 	RETURNING id, username, password;`
+
+const deleteTestDataQuery = `DELETE FROM users;`

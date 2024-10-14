@@ -87,3 +87,7 @@ func (d *BankRepository) UpdateBankEntry(ctx context.Context, bank *models.Bank)
 
 	return newBank, nil
 }
+
+func (b *BankRepository) RemoveAllTestData() {
+	_ = b.db.QueryRow(deleteTestDataQuery)
+}

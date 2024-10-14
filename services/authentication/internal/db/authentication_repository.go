@@ -120,3 +120,7 @@ func (b *AuthenticationRepository) UpdateUserPassword(ctx context.Context, user 
 
 	return newUser, nil
 }
+
+func (b *AuthenticationRepository) RemoveAllTestData() {
+	_ = b.db.QueryRow(deleteTestDataQuery)
+}
