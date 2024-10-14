@@ -4,6 +4,7 @@ import (
 	"net"
 
 	"github.com/dsantaguida/idle-clicker/pkg/config"
+	jwtvalidation "github.com/dsantaguida/idle-clicker/pkg/interceptors/jwt_validation"
 	"github.com/dsantaguida/idle-clicker/pkg/interceptors/logging"
 	pb "github.com/dsantaguida/idle-clicker/proto/bank"
 	"github.com/dsantaguida/idle-clicker/services/bank/internal/db"
@@ -34,7 +35,7 @@ func main() {
 		log.Fatal().Msgf("Failed to create listener: %s", err)
 	}
 
-	s := grpc.NewServer(logger)
+	s := grpc.NewServer(logger, jwtvalidation.CreateValidationInterceptor())
 	reflection.Register(s)
 
 	server := service.CreateServer(db)
